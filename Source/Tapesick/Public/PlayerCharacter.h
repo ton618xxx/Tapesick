@@ -44,6 +44,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* CrouchAction;
 
+	// --- Параметры движения (тюнингуются в Blueprint) ---
+
+	// Обычная скорость ходьбы (медленный темп в духе Visage)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = "0.0"))
+	float WalkSpeed = 165.0f;
+
+	// Ускоренная скорость (по Shift)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = "0.0"))
+	float SprintSpeed = 300.0f;
+
+	// Скорость в приседе (самая медленная, крадущаяся)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = "0.0"))
+	float CrouchSpeed = 90.0f;
+
 protected: 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
