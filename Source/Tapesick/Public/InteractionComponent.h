@@ -24,5 +24,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+protected:
+	// Дальность луча взаимодействия (см). Настраивается в Blueprint.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	float InteractionDistance = 200.0f;
+
+	// Актор, на которого игрок сейчас смотрит (nullptr — ни на кого).
+	UPROPERTY(BlueprintReadOnly, Category = "Interaction")
+	TObjectPtr<AActor> CurrentInteractable = nullptr;
 };
