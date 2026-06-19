@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "InteractionComponent.generated.h"
-
+class UCameraComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TAPESICK_API UInteractionComponent : public UActorComponent
@@ -29,7 +29,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	float InteractionDistance = 200.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction|Debug")
+	bool bShowDebug = false;
+
 	// Актор, на которого игрок сейчас смотрит (nullptr — ни на кого).
 	UPROPERTY(BlueprintReadOnly, Category = "Interaction")
 	TObjectPtr<AActor> CurrentInteractable = nullptr;
+
+	// Камера владельца, из которой пускаем луч. Находим один раз в BeginPlay.
+	UPROPERTY()
+	TObjectPtr<UCameraComponent> CachedCamera = nullptr;
 };
