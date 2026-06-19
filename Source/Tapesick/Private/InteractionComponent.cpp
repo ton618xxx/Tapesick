@@ -4,6 +4,7 @@
 #include "InteractionComponent.h"
 #include "Interactable.h"
 #include "DrawDebugHelpers.h"
+#include "Camera/CameraComponent.h"
 
 
 // Sets default values for this component's properties
@@ -22,7 +23,18 @@ void UInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	// Находим камеру владельца один раз и запоминаем.
+	if (AActor* OwnerActor = GetOwner())
+	{
+		CachedCamera = OwnerActor->GetComponentByClass<UCameraComponent>();
+	}
+
+	// Если камеры нет — предупреждаем в лог (трейс пойдёт от глаз актора как запасной вариант).
+	if (!CachedCamera)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InteractionComponent: камера не найдена у владельца %s"),
+			GetOwner() ? *GetOwner()->GetName() : TEXT("nullptr"));
+	}
 	
 }
 
@@ -39,10 +51,21 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		return;
 	}
 
-	// 2. Узнаём точку и направление "глаз" владельца
+	// 2. Узнаём точку и направление, откуда пускаем луч.
 	FVector ViewLocation;
 	FRotator ViewRotation;
-	OwnerActor->GetActorEyesViewPoint(ViewLocation, ViewRotation);
+
+	if (CachedCamera)
+	{
+		// Основной путь: целимся точно из камеры (центр экрана).
+		ViewLocation = CachedCamera->GetComponentLocation();
+		ViewRotation = CachedCamera->GetComponentRotation();
+	}
+	else
+	{
+		// Запасной путь: камеры нет — старое поведение от "глаз" актора.
+		OwnerActor->GetActorEyesViewPoint(ViewLocation, ViewRotation);
+	}
 
 	// 3. Считаем конец луча: от глаз вперёд на InteractionDistance
 	const FVector TraceStart = ViewLocation;
@@ -61,17 +84,23 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		QueryParams
 	);
 
-	// 5. Отладка: рисуем луч (зелёный — попал, красный — мимо)
-	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, bHit ? FColor::Green : FColor::Red, false, -1.0f, 0, 1.0f);
+	// 5. Отладка: рисуем луч (зелёный — попал, красный — мимо). Только если включён дебаг.
+	if (bShowDebug)
+	{
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, bHit ? FColor::Green : FColor::Red, false, -1.0f, 0, 1.0f);
+	}
 
 	// 6. Что под прицелом?
 	AActor* HitActor = bHit ? HitResult.GetActor() : nullptr;
 
-	// 7. Проверяем, реализует ли объект интерфейс Interactable
 	if (HitActor && HitActor->Implements<UInteractable>())
 	{
 		CurrentInteractable = HitActor;
-		GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Yellow, FString::Printf(TEXT("Вижу interactable: %s"), *HitActor->GetName()));
+
+		if (bShowDebug)
+		{
+			GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Yellow, FString::Printf(TEXT("Вижу interactable: %s"), *HitActor->GetName()));
+		}
 	}
 	else
 	{
