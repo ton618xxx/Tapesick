@@ -35,7 +35,7 @@ void UInteractionComponent::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("InteractionComponent: камера не найдена у владельца %s"),
 			GetOwner() ? *GetOwner()->GetName() : TEXT("nullptr"));
 	}
-	
+
 }
 
 
@@ -107,4 +107,3 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		CurrentInteractable = nullptr;
 	}
 }
-
