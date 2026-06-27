@@ -1,19 +1,61 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CassetteProgressSubsystem.h"
+#include "CassetteData.h"
+#include "Engine/AssetManager.h"
 
 void UCassetteProgressSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	// Стартовое состояние новой игры: все кассеты Locked, кроме первой (Unlocked).
-	CassetteStatuses.Init(ECassetteStatus::Locked, NumCassettes);
-	if (NumCassettes > 0)
+	LoadedCassettes.Empty();
+
+	// Спрашиваем у Asset Manager все ассеты типа CassetteData.
+	if (UAssetManager* Manager = UAssetManager::GetIfInitialized())
+	{
+		const FPrimaryAssetType CassetteType(TEXT("CassetteData"));
+
+		TArray<FPrimaryAssetId> CassetteIds;
+		Manager->GetPrimaryAssetIdList(CassetteType, CassetteIds);
+
+		// Сортируем по имени, чтобы порядок был стабильным (линейная разблокировка).
+		CassetteIds.Sort([](const FPrimaryAssetId& A, const FPrimaryAssetId& B)
+			{
+				return A.PrimaryAssetName.LexicalLess(B.PrimaryAssetName);
+			});
+
+		// Загружаем каждую кассету синхронно (данные лёгкие) и складываем в массив.
+		for (const FPrimaryAssetId& Id : CassetteIds)
+		{
+			if (UCassetteData* Data = Cast<UCassetteData>(Manager->GetPrimaryAssetObject(Id)))
+			{
+				LoadedCassettes.Add(Data);
+			}
+			else
+			{
+				// Объект ещё не загружен в память — грузим синхронно.
+				const FSoftObjectPath Path = Manager->GetPrimaryAssetPath(Id);
+				if (UCassetteData* LoadedData = Cast<UCassetteData>(Path.TryLoad()))
+				{
+					LoadedCassettes.Add(LoadedData);
+				}
+			}
+		}
+	}
+
+	// Число кассет = сколько реально нашли.
+	const int32 Count = LoadedCassettes.Num();
+
+	// Стартовое состояние: все Locked, кроме первой (Unlocked).
+	CassetteStatuses.Init(ECassetteStatus::Locked, Count);
+	if (Count > 0)
 	{
 		CassetteStatuses[0] = ECassetteStatus::Unlocked;
 	}
 
 	bIntroCompleted = false;
+
+	
 }
 
 ECassetteStatus UCassetteProgressSubsystem::GetCassetteStatus(int32 Index) const
@@ -55,7 +97,16 @@ void UCassetteProgressSubsystem::SetIntroCompleted()
 	bIntroCompleted = true;
 }
 
+UCassetteData* UCassetteProgressSubsystem::GetCassetteData(int32 Index) const
+{
+	if (LoadedCassettes.IsValidIndex(Index))
+	{
+		return LoadedCassettes[Index];
+	}
+	return nullptr;
+}
+
 int32 UCassetteProgressSubsystem::GetNumCassettes() const
 {
-	return NumCassettes;
+	return LoadedCassettes.Num();
 }

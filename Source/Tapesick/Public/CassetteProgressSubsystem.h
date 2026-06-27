@@ -7,6 +7,7 @@
 #include "CassetteProgressSubsystem.generated.h"
 
 /** Статус одной VHS-кассеты в прогрессе игрока. */
+class UCassetteData;
 UENUM(BlueprintType)
 enum class ECassetteStatus : uint8
 {
@@ -32,6 +33,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Cassette Progress")
 	ECassetteStatus GetCassetteStatus(int32 Index) const;
 
+	// Вернуть данные кассеты (название, уровень, обложку) по индексу. Для меню.
+	UFUNCTION(BlueprintCallable, Category = "Cassette Progress")
+	UCassetteData* GetCassetteData(int32 Index) const;
+
 	// Пометить кассету пройденной и открыть следующую. Для конца уровня. Идемпотентна.
 	UFUNCTION(BlueprintCallable, Category = "Cassette Progress")
 	void CompleteCassette(int32 Index);
@@ -56,6 +61,8 @@ protected:
 	// Статус каждой кассеты. Индекс = номер кассеты. Размер = NumCassettes.
 	UPROPERTY(BlueprintReadOnly, Category = "Cassette Progress")
 	TArray<ECassetteStatus> CassetteStatuses;
+	UPROPERTY()
+	TArray<TObjectPtr<UCassetteData>> LoadedCassettes;
 
 	// Пройден ли вступительный пролог.
 	UPROPERTY(BlueprintReadOnly, Category = "Cassette Progress")
