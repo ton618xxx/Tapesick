@@ -20,8 +20,9 @@ enum class ECassetteStatus : uint8
  * Хранит прогресс кассет и состояние пролога.
  * Живёт всё время игры, переживает смену уровней. Источник правды для меню, уровней и сохранений.
  */
-UCLASS()
+UCLASS(BlueprintType)
 class TAPESICK_API UCassetteProgressSubsystem : public UGameInstanceSubsystem
+
 {
 	GENERATED_BODY()
 
