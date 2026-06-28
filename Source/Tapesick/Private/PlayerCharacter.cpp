@@ -3,6 +3,7 @@
 
 #include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -28,6 +29,17 @@ APlayerCharacter::APlayerCharacter()
 
 	// ��������� ������ �������������� ������ �� �������� ������ (����)
 	FirstPersonCamera->bUsePawnControlRotation = true;
+
+	// Создаём меш от первого лица и прикрепляем к камере, чтобы он следовал за взглядом.
+	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+	FirstPersonMesh->SetupAttachment(FirstPersonCamera);
+
+	// Этот меш видит только владелец (игрок), для других/иных видов камеры — скрыт.
+	FirstPersonMesh->SetOnlyOwnerSee(true);
+
+	// Меш от первого лица не отбрасывает тень в основном проходе (иначе видны "обрубки").
+	FirstPersonMesh->bCastDynamicShadow = false;
+	FirstPersonMesh->CastShadow = false;
 }
 
 // Called when the game starts or when spawned

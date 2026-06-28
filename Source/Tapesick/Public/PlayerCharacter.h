@@ -22,6 +22,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* FirstPersonCamera;
 
+	// Меш от первого лица (руки/тело). Прикреплён к камере, виден только игроку.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	USkeletalMeshComponent* FirstPersonMesh;
+
 	// --- Enhanced Input: ссылки на ассеты (выставляются в Blueprint) ---
 
 	// Набор привязок клавиш (наш IMC_Player)

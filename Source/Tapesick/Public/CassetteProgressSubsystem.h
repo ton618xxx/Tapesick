@@ -55,11 +55,7 @@ public:
 	int32 GetNumCassettes() const;
 
 protected:
-	// Сколько всего кассет в игре. Пока константа, позже свяжем с Data Assets.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cassette Progress")
-	int32 NumCassettes = 3;
-
-	// Статус каждой кассеты. Индекс = номер кассеты. Размер = NumCassettes.
+	// Статус каждой кассеты. Индекс = номер кассеты. Размер = число загруженных кассет.
 	UPROPERTY(BlueprintReadOnly, Category = "Cassette Progress")
 	TArray<ECassetteStatus> CassetteStatuses;
 	UPROPERTY()
