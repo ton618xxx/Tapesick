@@ -1,0 +1,36 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="DebugGame" />
+    <BuildType Name="DebugGame Editor" />
+    <BuildType Name="Development" />
+    <BuildType Name="Development Editor" />
+    <BuildType Name="Shipping" />
+    <Platform Name="Win64" />
+    <Platform Name="Win64-arm64" />
+    <Platform Name="Win64-arm64ec" />
+  </Configurations>
+  <Folder Name="/Engine/">
+    <Project Path="Intermediate/ProjectFiles/UE5.vcxproj" Id="baa1b5a5-d1f7-337d-be5a-4478c82cd49f">
+      <BuildType Project="BuiltWithUnrealBuildTool" />
+      <Platform Project="Win64" />
+      <Build Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/Games/">
+    <Project Path="Intermediate/ProjectFiles/Tapesick.vcxproj" Id="51f59c61-85be-33e1-852d-74359ccbf2c5">
+      <BuildType Solution="DebugGame Editor|*" Project="DebugGame_Editor" />
+      <BuildType Solution="Development Editor|*" Project="Development_Editor" />
+      <Platform Solution="*|Win64" Project="x64" />
+      <Platform Solution="*|Win64-arm64" Project="arm64" />
+      <Platform Solution="*|Win64-arm64ec" Project="arm64ec" />
+    </Project>
+  </Folder>
+  <Folder Name="/Visualizers/">
+    <File Path="F:/Epic Games/UE_5.8/Engine/Extras/VisualStudioDebugging/Unreal.natjmc" />
+    <File Path="F:/Epic Games/UE_5.8/Engine/Extras/VisualStudioDebugging/Unreal.natstepfilter" />
+    <File Path="F:/Epic Games/UE_5.8/Engine/Extras/VisualStudioDebugging/Unreal.natvis" />
+  </Folder>
+  <Properties Name="ddbf523f-7eb6-4887-bd51-85a714ff87eb">
+    <Property Name="AvailablePlatforms" Value="Win64" />
+  </Properties>
+</Solution>
